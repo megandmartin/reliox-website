@@ -1,9 +1,9 @@
 import { cp, mkdir, writeFile, rm } from 'node:fs/promises';
-import { home, downloadPage, privacyPage, releasesPage, notFoundPage, site } from '../src/site.mjs';
+import { home, downloadPage, privacyPage, releasesPage, transcriptsPage, notFoundPage, site } from '../src/site.mjs';
 await rm('dist', { recursive: true, force: true });
 await mkdir('dist', { recursive: true });
 await cp('public', 'dist', { recursive: true });
-const pages = [['/', home], ['/download/', downloadPage], ['/privacy/', privacyPage], ['/releases/', releasesPage]];
+const pages = [['/', home], ['/download/', downloadPage], ['/privacy/', privacyPage], ['/releases/', releasesPage], ['/films/', transcriptsPage]];
 for (const [path, render] of pages) {
   await mkdir(`dist${path}`, { recursive: true });
   await writeFile(`dist${path}index.html`, render());

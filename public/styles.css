@@ -2258,3 +2258,112 @@ kbd {
     -webkit-backdrop-filter: none;
   }
 }
+
+/* Film text stays readable independently of playback and native caption controls. */
+.film-player figcaption .film-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 18px;
+  flex-shrink: 0;
+}
+.footer-bottom nav {
+  flex-wrap: wrap;
+}
+.transcript-index {
+  display: grid;
+  gap: 0;
+  border-block: 1px solid var(--line);
+  margin-top: 35px;
+}
+.transcript-index a {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 20px;
+  padding: 17px 0;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.transcript-index a + a {
+  border-top: 1px solid var(--line);
+}
+.transcript-index a:hover {
+  color: var(--accent);
+}
+.transcript-index a > span {
+  color: var(--muted);
+  font-size: 12px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.transcript-section {
+  scroll-margin-top: 110px;
+  margin-top: 52px;
+}
+.transcript-page .transcript-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin: 18px 0 26px;
+}
+.transcript-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.transcript-page .transcript-list > li {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 18px;
+  margin: 0;
+  padding: 20px 0;
+  border-top: 1px solid var(--line);
+}
+.transcript-list time {
+  color: var(--accent);
+  font-size: 12px;
+  line-height: 2;
+  font-variant-numeric: tabular-nums;
+}
+.prose-page.transcript-page .transcript-list p.transcript-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--ink);
+}
+.prose-page.transcript-page .transcript-list p.transcript-description {
+  margin-top: 9px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.transcript-description > span {
+  font-weight: 600;
+}
+.transcript-end {
+  border-top: 1px solid var(--line);
+  padding-top: 30px;
+  margin-top: 35px;
+}
+@media (max-width: 600px) {
+  .film-player figcaption .film-links {
+    gap: 3px 20px;
+    margin-top: 4px;
+  }
+  .film-player figcaption .film-links a {
+    min-height: 44px;
+  }
+  .transcript-page .transcript-list > li {
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 12px;
+    padding-block: 18px;
+  }
+  .transcript-section {
+    margin-top: 40px;
+    scroll-margin-top: 94px;
+  }
+  .prose-page.transcript-page .transcript-list p.transcript-text {
+    font-size: 14px;
+  }
+}

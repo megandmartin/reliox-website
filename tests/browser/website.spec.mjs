@@ -49,7 +49,7 @@ test('experience tabs support click and keyboard navigation', async ({ page }) =
 test('public pages fit the viewport and load without script errors', async ({ page }) => {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
-  for (const route of ['/', '/download/', '/privacy/', '/releases/']) {
+  for (const route of ['/', '/download/', '/privacy/', '/releases/', '/films/']) {
     const response = await page.goto(route);
     expect(response.status()).toBe(200);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
@@ -146,4 +146,48 @@ test('Mac download resolves to the versioned release without transferring the ap
   await direct.click({ noWaitAfter: true });
   expect(await redirect).toEqual({ status: 307, location: release.url });
   expect(externalRequests).toEqual([]);
+});
+
+test('native English captions load for both films and remain selected through a pause', async ({ page }) => {
+  await openHome(page);
+  for (const id of ['launch-film', 'product-demo']) {
+    const player = page.locator(`#${id}`);
+    const video = player.locator('video');
+    const captions = video.locator('track[kind="captions"]');
+    await expect(captions).toHaveCount(1);
+    await expect(captions).toHaveAttribute('srclang', 'en');
+    await expect(captions).toHaveAttribute('label', 'English');
+    await captions.evaluate(element => { element.track.mode = 'showing'; });
+    await player.locator('.film-play').click();
+    await expect(video).toHaveJSProperty('paused', false);
+    await expect(video).toHaveJSProperty('controls', true);
+    await expect(captions).toHaveJSProperty('readyState', 2);
+    await expect.poll(() => video.evaluate(element => Number.isFinite(element.duration) && element.duration > 0)).toBe(true);
+    const content = await captions.evaluate(element => [...element.track.cues].map(cue => ({ start: cue.startTime, end: cue.endTime, text: cue.text })));
+    const duration = await video.evaluate(element => element.duration);
+    expect(Number.isFinite(duration) && duration > 0).toBe(true);
+    expect(content.length).toBeGreaterThan(0);
+    for (const cue of content) {
+      expect(cue.start).toBeGreaterThanOrEqual(0);
+      expect(cue.end).toBeGreaterThan(cue.start);
+      expect(cue.end).toBeLessThanOrEqual(duration + 0.05);
+      expect(cue.text.trim()).not.toBe('');
+    }
+    await video.evaluate(element => element.pause());
+    await expect(video).toHaveJSProperty('paused', true);
+    expect(await captions.evaluate(element => element.track.mode)).toBe('showing');
+  }
+});
+
+test('each film transcript opens from its nearby link using the keyboard', async ({ page, baseURL }) => {
+  for (const [id, fragment] of [['launch-film', 'launch-film-transcript'], ['product-demo', 'product-demo-transcript']]) {
+    await openHome(page);
+    const transcript = page.locator(`#${id}`).getByRole('link', { name: 'Read transcript', exact: true });
+    await expect(transcript).toHaveAttribute('href', `/films/#${fragment}`);
+    await transcript.focus();
+    await transcript.press('Enter');
+    await expect(page).toHaveURL(new URL(`/films/#${fragment}`, baseURL).href);
+    await expect(page.locator(`#${fragment}`)).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  }
 });

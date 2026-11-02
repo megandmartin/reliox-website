@@ -6,9 +6,10 @@ import { spawn } from 'node:child_process';
 import { createServer } from 'node:net';
 import { once } from 'node:events';
 import { site } from '../src/site.mjs';
+import { films } from '../src/films.mjs';
 
 const root = resolve('dist');
-const routes = ['/', '/download/', '/privacy/', '/releases/'];
+const routes = ['/', '/download/', '/privacy/', '/releases/', '/films/'];
 const config = JSON.parse(await readFile('vercel.json', 'utf8'));
 const release = JSON.parse(await readFile('public/release.json', 'utf8'));
 const pages = new Map(await Promise.all([...routes, '/404.html'].map(async route => [route, await readFile(join(root, route.endsWith('/') ? `${route}index.html` : route), 'utf8')])));
@@ -64,6 +65,56 @@ test('internal links, scripts, posters, images and fragment targets exist', asyn
         const target = await readFile(file, 'utf8');
         assert.ok(ids(target).has(decodeURIComponent(url.hash.slice(1))), `${route}: broken fragment ${raw}`);
       }
+    }
+  }
+});
+
+function captionTime(value) {
+  assert.match(value, /^(?:\d{2,}:)?[0-5]\d:[0-5]\d\.\d{3}$/, `invalid WebVTT time: ${value}`);
+  return value.split(':').reduce((seconds, part) => seconds * 60 + Number(part), 0);
+}
+
+test('each film provides valid English captions and a complete linked transcript', async () => {
+  const videos = [...pages.get('/').matchAll(/<video\b([^>]*)>([\s\S]*?)<\/video>/gi)].map(([, opening, body]) => ({ ...attrs(opening), body }));
+  assert.equal(videos.length, films.length, 'every homepage film needs accessibility metadata');
+  const transcript = pages.get('/films/');
+  const transcriptText = transcript.replace(/<[^>]+>/g, ' ').replaceAll('&amp;', '&').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&quot;', '"').replaceAll('&#39;', "'").replace(/\s+/g, ' ');
+  for (const film of films) {
+    const video = videos.find(item => item.id === `${film.id}-video`);
+    assert.ok(video, `${film.id}: missing homepage video`);
+    assert.ok(tags(video.body, 'source').some(item => item.src === film.source && item.type === 'video/mp4'), `${film.id}: mismatched media source`);
+    const captions = tags(video.body, 'track').filter(item => item.kind === 'captions');
+    assert.equal(captions.length, 1, `${film.id}: expected one native caption track`);
+    assert.equal(captions[0].srclang, 'en', `${film.id}: captions must identify their language`);
+    assert.equal(captions[0].label, 'English', `${film.id}: captions need a readable native-control label`);
+    assert.equal(captions[0].src, film.captionPath, `${film.id}: caption file differs from metadata`);
+    const source = await readFile(join('public', film.captionPath), 'utf8');
+    assert.equal(await readFile(htmlFile(film.captionPath), 'utf8'), source, `${film.id}: exported captions differ from source`);
+    assert.match(source, /^\uFEFF?WEBVTT(?:[ \t][^\r\n]*)?\r?\n/, `${film.id}: missing WebVTT signature`);
+    const blocks = source.trimEnd().split(/\r?\n[ \t]*\r?\n/).slice(1).filter(block => !/^(?:NOTE|STYLE|REGION)(?:\s|$)/.test(block));
+    assert.ok(blocks.length > 0, `${film.id}: empty caption track`);
+    let previousStart = -1;
+    for (const block of blocks) {
+      const lines = block.split(/\r?\n/);
+      const timing = lines[0].includes('-->') ? 0 : 1;
+      const match = /^(\S+)\s+-->\s+(\S+)(?:\s+.*)?$/.exec(lines[timing] || '');
+      assert.ok(match, `${film.id}: invalid caption cue timing`);
+      const start = captionTime(match[1]);
+      const end = captionTime(match[2]);
+      assert.ok(start >= previousStart && end > start, `${film.id}: cues need ordered, positive time ranges`);
+      assert.ok(end <= film.durationSeconds + 0.001, `${film.id}: caption extends beyond the film`);
+      assert.ok(lines.slice(timing + 1).join('\n').trim(), `${film.id}: caption cue has no text`);
+      previousStart = start;
+    }
+    assert.ok(tags(pages.get('/'), 'a').some(item => item.href === `/films/#${film.transcriptAnchor}`), `${film.id}: missing nearby transcript link`);
+    assert.ok(ids(transcript).has(film.transcriptAnchor), `${film.id}: missing transcript anchor`);
+    assert.ok(film.transcriptSegments.length > 0, `${film.id}: transcript has no segments`);
+    let previousSegmentStart = -1;
+    for (const segment of film.transcriptSegments) {
+      assert.ok(segment.start >= 0 && segment.start >= previousSegmentStart && segment.end > segment.start && segment.end <= film.durationSeconds + 0.001, `${film.id}: transcript timestamp is outside the film or out of order`);
+      assert.ok(transcriptText.includes(segment.text.replace(/\s+/g, ' ')), `${film.id}: spoken or on-screen words are missing from the transcript`);
+      if (segment.description) assert.ok(transcriptText.includes(segment.description.replace(/\s+/g, ' ')), `${film.id}: visual description is missing from the transcript`);
+      previousSegmentStart = segment.start;
     }
   }
 });
@@ -180,4 +231,10 @@ test('preview serves pages, real download redirects, 404s and video byte ranges'
   assert.equal(head.status, 200);
   assert.ok(Number(head.headers.get('content-length')) > 0);
   assert.equal((await head.arrayBuffer()).byteLength, 0);
+  for (const accessibleFilm of films) {
+    const captions = await fetch(origin + accessibleFilm.captionPath);
+    assert.equal(captions.status, 200, `${accessibleFilm.id}: caption file is unavailable`);
+    assert.match(captions.headers.get('content-type'), /^text\/vtt\b/, `${accessibleFilm.id}: caption MIME type is incorrect`);
+    assert.equal(await captions.text(), await readFile(htmlFile(accessibleFilm.captionPath), 'utf8'));
+  }
 });
