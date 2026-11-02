@@ -1,48 +1,73 @@
-# Reliox website
+<a href="https://www.relioxos.com/">
+  <img src="docs/assets/reliox-repository-preview.png" alt="Reliox — a little space for your people. Preview of the native Mac workspace with example conversations and relationship context." width="1280" height="640">
+</a>
 
-Public homepage and Mac download landing page for Reliox.
+# Reliox
 
-- Canonical site: https://www.relioxos.com
-- Homepage: `/`
-- Download and installation: `/download/`
-- Privacy explanation: `/privacy/`
-- Release notes and checksum: `/releases/`
+**A little space. For your people.**
 
-## Development
+Conversations, the details you want to remember, and the follow-up you promised. Reliox brings them together in a calm workspace on your Mac.
 
-Node.js 22+; no runtime or build dependencies.
+[Visit the website](https://www.relioxos.com/) · [Download for Mac](https://www.relioxos.com/download/) · [Watch the walkthrough](https://www.relioxos.com/#watch-demo) · [Release notes](https://www.relioxos.com/releases/)
+
+[![Website checks](https://github.com/megandmartin/reliox-website/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/megandmartin/reliox-website/actions/workflows/checks.yml) [![Early access 0.9.0](https://img.shields.io/badge/early_access-0.9.0-7056ad)](https://github.com/megandmartin/reliox-website/releases/tag/v0.9.0) [![macOS 14+ · Apple Silicon](https://img.shields.io/badge/macOS_14%2B-Apple_Silicon-34313e)](https://www.relioxos.com/download/)
+
+## A person. The whole thread.
+
+| In Reliox | What it helps you do |
+| --- | --- |
+| Conversations | Read selected or imported context beside notes and a reply draft. |
+| People & circles | Keep the little details, relationship history, and follow-up preferences together. |
+| Today & next steps | Give a promise a next step, with the original context close by. |
+| Local workspace | Save your own workspace encrypted on your Mac; explore the temporary demo without connecting accounts. |
+
+The [recorded walkthrough](https://www.relioxos.com/#watch-demo) uses example conversations. Read [how Reliox handles data](https://www.relioxos.com/privacy/) before bringing in your own context.
+
+> [!IMPORTANT]
+> **Mac early access:** Reliox 0.9.0 requires Apple Silicon and macOS 14 or later. The app is ad-hoc signed and **not Apple notarized**. Read the [installation guidance](https://www.relioxos.com/download/#install) and [release checksums](https://github.com/megandmartin/reliox-website/releases/tag/v0.9.0) before opening it. Optional connections and AI features need separate setup; live account compatibility is still being tested.
+
+## About this repository
+
+This is the public source for the Reliox website: the product introduction, download and installation guide, privacy explanation, and release notes. The Mac download is hosted in [GitHub Releases](https://github.com/megandmartin/reliox-website/releases).
+
+The website is static HTML, CSS, and JavaScript, generated with Node.js. It has **no runtime or build dependencies**, accounts, analytics scripts, or data collection forms. Demo screenshots use synthetic data. The native Mac application source is maintained separately.
+
+## Run it locally
+
+Use **Node.js 22 or later**. No dependency installation is needed.
 
 ```sh
+git clone https://github.com/megandmartin/reliox-website.git
+cd reliox-website
 npm run dev
 ```
 
-The preview runs at http://127.0.0.1:4173. `npm run build` generates `dist/` from `src/site.mjs` and `public/`.
+Open [127.0.0.1:4173](http://127.0.0.1:4173). After editing source files, restart `npm run dev` to rebuild, then refresh your browser.
 
-## Hosting and releases
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Build the website and serve a local preview. |
+| `npm test` | Build and check pages, links, release metadata, security headers, and preview-server behavior. |
+| `npm run build` | Generate the deployable website in `dist/`. |
+| `npm start` | Serve an existing build. |
 
-Vercel project: `reliox-website` in `megandmartins-projects`. Production branch: `main`.
-The apex redirects to `www.relioxos.com`. Vercel config includes TLS, CSP and other security headers.
+```text
+src/site.mjs        Page content, templates, and site metadata
+public/            Styles, scripts, approved screenshots, and films
+scripts/           Static build, preview server, and checks
+.github/           CI and contribution templates
+docs/              Development notes and repository artwork
+```
 
-The Mac ZIP is a GitHub Release asset, not part of the website deployment. `/download/mac/` redirects to the versioned binary. Download instructions distinguish a native Mac app from a browser app and clearly disclose the ad-hoc signature and lack of Apple notarization.
+See the [development guide](docs/DEVELOPMENT.md) for hosting, release updates, and video behavior.
 
-To update a release:
+## Help shape the next version
 
-1. Build and verify the Mac app separately. Preserve the existing bundle, Keychain, crypto and storage identifiers.
-2. Package `Reliox.app`, verify the extracted copy, and compute SHA-256.
-3. Publish the ZIP and `SHA256SUMS` as release assets.
-4. Update the version and release URL in `src/site.mjs`, the download redirect in `vercel.json` and `scripts/serve.mjs`, and `public/release.json`.
-5. Run build and browser checks, then deploy. Test the production download anonymously, including file hash and contents.
+Clearer installation instructions, accessible interactions, responsive layouts, and useful bug reports all help. Start with the [contribution guide](CONTRIBUTING.md), check [open issues](https://github.com/megandmartin/reliox-website/issues), or [suggest an improvement](https://github.com/megandmartin/reliox-website/issues/new/choose).
 
-The native application source stays in its original local handoff directory. Only approved synthetic demo screenshots, the app icon, public website source and release artifacts are published here. No private conversations, credentials, model sessions, logs or native app evidence are included in this repository.
+The [website roadmap](docs/ROADMAP.md) covers captions, browser regression checks, and release verification.
 
-## Scope
+- [Report a bug or share a feature idea](https://github.com/megandmartin/reliox-website/issues/new/choose).
+- [Report a security vulnerability privately](SECURITY.md).
 
-No database, account system, data capture form or analytics scripts. Account authorization, microphone/system capture, native-device acceptance and Apple notarization are separate from website verification. The app supports Apple Silicon and macOS 14+; other operating systems and a browser app are not offered.
-
-## Homepage films
-
-The hero contains the supplied 38-second launch film; a two-minute product walkthrough appears below the feature sections. Both are self-hosted under `public/media/` as 1080p H.264/AAC MP4 with front-loaded metadata for progressive playback. The launch film is approximately 4.5 MB; the walkthrough is approximately 22.7 MB. Source edits, timing and sound are preserved.
-
-The hero starts muted when at least 45% of its player enters the viewport, pauses when it leaves, and honors manual pauses, reduced-motion and data-saving preferences. “Watch from the start with sound” restarts and unmutes through a user gesture. The walkthrough only loads on explicit play. Native playback, seeking, audio and fullscreen controls remain available, as do posters and direct-file links. Videos pause when the page is hidden; starting one pauses the other.
-
-`preload="none"` prevents the full videos from transferring on arrival. Vercel serves media byte ranges for seeking. These media URLs have a one-year immutable cache: use a new filename when replacing a film or poster. No new video service, cookie or third-party player is used.
+Public feedback should use example data. Keep private conversations, recordings, contact details, and credentials out of issues and pull requests.
