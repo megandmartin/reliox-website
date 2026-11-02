@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Download and installation guide
+    url: https://www.relioxos.com/download/
+    about: Check Mac compatibility, early-access status and installation steps.
+  - name: Report a security vulnerability privately
+    url: https://github.com/megandmartin/reliox-website/security/advisories/new
+    about: Keep exploit details and sensitive information out of public issues.
