@@ -7,9 +7,14 @@
     "build": "node scripts/build.mjs",
     "dev": "node scripts/build.mjs && node scripts/serve.mjs",
     "start": "node scripts/serve.mjs",
-    "test": "node scripts/build.mjs && node --test scripts/check.mjs"
+    "test": "node scripts/build.mjs && node --test scripts/check.mjs scripts/verify-release.test.mjs scripts/serve.test.mjs",
+    "test:browser": "playwright test",
+    "verify:release": "node scripts/verify-release.mjs"
   },
   "engines": {
     "node": ">=22"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1"
   }
 }

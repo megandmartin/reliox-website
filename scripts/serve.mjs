@@ -4,8 +4,9 @@ import { createReadStream } from 'node:fs';
 import { resolve, extname, sep } from 'node:path';
 const root = resolve('dist');
 const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.webp': 'image/webp', '.png': 'image/png', '.mp4': 'video/mp4', '.vtt': 'text/vtt', '.json': 'application/json', '.xml': 'application/xml', '.txt': 'text/plain' };
-createServer(async (req, res) => {
+const server = createServer(async (req, res) => {
   try {
+    if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405, { Allow: 'GET, HEAD' }).end(); return; }
     const url = new URL(req.url, 'http://localhost');
     if (url.pathname === '/download/mac/') { res.writeHead(307, { Location: 'https://github.com/megandmartin/reliox-website/releases/download/v0.9.0/Reliox-0.9.0-macOS-Apple-Silicon.zip' }).end(); return; }
     let path = resolve(root, `.${decodeURIComponent(url.pathname)}`);
@@ -15,8 +16,9 @@ createServer(async (req, res) => {
     const headers = { 'Content-Type': mime[extname(path)] || 'application/octet-stream', 'Accept-Ranges': 'bytes' };
     let start = 0;
     let end = size - 1;
-    if (req.headers.range) {
-      const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range);
+    const rangeHeader = req.method === 'GET' ? req.headers.range : undefined;
+    if (rangeHeader) {
+      const range = /^bytes=(\d*)-(\d*)$/.exec(rangeHeader);
       if (!range || (!range[1] && !range[2])) { res.writeHead(416, { 'Content-Range': `bytes */${size}` }).end(); return; }
       start = range[1] ? Number(range[1]) : Math.max(0, size - Number(range[2]));
       end = range[1] && range[2] ? Math.min(Number(range[2]), size - 1) : size - 1;
@@ -24,10 +26,13 @@ createServer(async (req, res) => {
       headers['Content-Range'] = `bytes ${start}-${end}/${size}`;
     }
     headers['Content-Length'] = String(end - start + 1);
-    res.writeHead(req.headers.range ? 206 : 200, headers);
-    if (req.method === 'HEAD') { res.end(); return; }
+    res.writeHead(rangeHeader ? 206 : 200, headers);
+    if (req.method === 'HEAD' || size === 0) { res.end(); return; }
     createReadStream(path, { start, end }).on('error', () => res.destroy()).pipe(res);
   } catch {
-    res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' }).end(await readFile(resolve(root, '404.html')));
+    if (res.headersSent || res.destroyed) { res.destroy(); return; }
+    const fallback = await readFile(resolve(root, '404.html')).catch(() => 'Page not found');
+    res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' }).end(req.method === 'HEAD' ? undefined : fallback);
   }
-}).listen(Number(process.env.PORT || 4173), '127.0.0.1', () => console.log(`Reliox preview at http://127.0.0.1:${process.env.PORT || 4173}`));
+});
+server.listen(Number(process.env.PORT || 4173), '127.0.0.1', () => console.log(`Reliox preview at http://127.0.0.1:${server.address().port}`));

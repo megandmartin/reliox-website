@@ -18,7 +18,7 @@ The published pages are `/`, `/download/`, `/privacy/` and `/releases/`, with a 
 
 ## Validation
 
-Run `npm test` before submitting a change; it builds the site and checks the generated output and local preview server. Automated validation covers website contracts; review the rendered result separately when changing content, layout or interaction.
+Run `npm test` before submitting a change; it builds the site and checks the generated output, local preview server, and synthetic release-verifier cases. Run `npm run test:browser` for interface changes after the [browser-test setup](ENGINEERING.md). The [engineering notes](ENGINEERING.md) describe coverage and boundaries. Review the rendered result separately when changing content, layout or interaction.
 
 Check desktop and phone widths, menu and tab keyboard behavior, focus visibility, reduced motion and the download journey. For media changes, check poster loading, play, pause, sound, seeking and fullscreen in the affected browsers. A website build or browser check does not verify native installation, account authorization, audio capture or longer-term app use.
 
