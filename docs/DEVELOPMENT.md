@@ -14,7 +14,7 @@ The site is static HTML, CSS and JavaScript, built with Node.js 22 or later. The
 
 `npm run dev` builds the site and serves it at <http://127.0.0.1:4173>. Restart the command after source changes; it does not watch files. `npm run build` produces `dist/` without starting a server. `npm start` serves an existing build. Set `PORT` to choose a different local port.
 
-The published pages are `/`, `/download/`, `/privacy/` and `/releases/`, with a custom 404 page. The canonical origin is <https://www.relioxos.com>.
+The published pages are `/`, `/download/`, `/privacy/`, `/releases/` and `/films/`, with a custom 404 page. The canonical origin is <https://www.relioxos.com>.
 
 ## Validation
 
@@ -36,9 +36,9 @@ GitHub's repository link card is configured separately: open **Settings → Gene
 
 ## Mac releases
 
-The ZIP and `SHA256SUMS` are GitHub Release assets, separate from the website deployment. `/download/mac/` redirects to the versioned ZIP. Native app source is maintained separately; this repository does not build the app.
+The ZIP and `SHA256SUMS` are GitHub Release assets, separate from the website deployment. `/download/mac/` redirects to the versioned ZIP. The website build consumes a prebuilt Mac release; it does not produce the app binary.
 
-Reliox 0.10.0 is an early-access development build for Apple Silicon Macs running macOS 14 or later. It is ad-hoc signed and has not been notarized by Apple. Keep those facts visible in download and release guidance. Native-device acceptance, account connections and recording permissions require separate verification.
+Reliox 0.10.0 is an early-access development build for Apple Silicon Macs running macOS 14 or later. It is ad-hoc signed and has not been notarized by Apple. Keep those facts visible in download and release guidance. Installation, account connections, and recording permissions need their own acceptance checks.
 
 For a maintainer preparing a release:
 
@@ -51,6 +51,10 @@ For a maintainer preparing a release:
 Use only approved synthetic demo screenshots, app icons and public release artifacts. Never add native workspace data, private conversations, credentials, model sessions or diagnostic logs to this repository.
 
 ## Homepage films
+
+Each player has an English WebVTT track and a nearby link to the readable `/films/` transcripts. The text preserves the recorded Relio branding and example conversations; the walkthrough identifies the earlier version shown. Original video and audio files are unchanged. `src/films.mjs` stores transcript passages, timing, and caption references. Versioned `.vtt` files live in `public/media/`.
+
+The initial text was checked against visible titles and embedded subtitles, with two local speech-recognition models used to cross-check narration. A direct listening review was unavailable. For caption updates, review the wording and timing against the original film, including speech and meaningful sound. Change the VTT filename when replacing a published track because media URLs use immutable caching.
 
 `public/media/` contains the 38-second launch film and the two-minute product walkthrough, plus their posters. Both films are 1080p H.264/AAC MP4 with front-loaded metadata for progressive playback. The launch film is approximately 4.5 MB; the walkthrough is approximately 22.7 MB.
 

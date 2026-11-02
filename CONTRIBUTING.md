@@ -1,6 +1,6 @@
 # Contributing to the Reliox website
 
-Thanks for helping make Reliox easier to discover, understand and use. This repository contains the public website, installation guidance and release information. The native Mac app is developed separately.
+Thanks for helping make Reliox easier to discover, understand and use. This repository covers the product website, demos, installation guidance, and release information.
 
 ## Useful ways to help
 
@@ -35,7 +35,7 @@ This builds the site and checks the generated output, local preview server, and 
 
 Create a branch, make a small change and open a pull request that explains the problem, the resulting behavior and what you checked. Edit `src/` or `public/`; `dist/` is generated and stays out of Git. Preserve the current visual identity and straightforward, factual tone.
 
-Keep the early-access status, Mac requirements and installation limitations accurate. A passing website check does not verify native app behavior. Release binaries and native-app changes need their own maintainer review; see [development and release notes](docs/DEVELOPMENT.md).
+Keep the early-access status, Mac requirements, and installation limitations accurate. Changes to download metadata or release binaries need maintainer review; see [development and release notes](docs/DEVELOPMENT.md).
 
 Use only approved example data in screenshots and recordings. Never upload private conversations, contact details, credentials, account tokens, recordings or diagnostic logs containing personal data. Issues and pull requests are public. Report security vulnerabilities through [private vulnerability reporting](SECURITY.md).
 

@@ -1,3 +1,5 @@
+import { films } from './films.mjs';
+
 export const site = {
   name: 'Reliox',
   origin: 'https://www.relioxos.com',
@@ -28,7 +30,7 @@ function header(path) {
 
 function footer() {
   return `<footer class="site-footer wrap"><div class="footer-top"><a class="wordmark" href="/">${icon}<span>Reliox</span></a><p>A little space. For your people.</p></div>
-  <div class="footer-bottom"><span>© 2026 Reliox</span><nav aria-label="Footer navigation"><a href="/download/">Download</a><a href="/privacy/">Privacy</a><a href="/releases/">Release notes</a><a href="${site.repo}/issues">Feedback ${arrow}</a></nav><span class="footer-note">Made for the Mac. Built around people.</span></div></footer>`;
+  <div class="footer-bottom"><span>© 2026 Reliox</span><nav aria-label="Footer navigation"><a href="/download/">Download</a><a href="/privacy/">Privacy</a><a href="/releases/">Release notes</a><a href="/films/">Film transcripts</a><a href="${site.repo}/issues">Feedback ${arrow}</a></nav><span class="footer-note">Made for the Mac. Built around people.</span></div></footer>`;
 }
 
 export function layout({ title, description, path = '/', body, pageClass = '', scripts = [], preloadImages = [] }) {
@@ -46,17 +48,20 @@ export function layout({ title, description, path = '/', body, pageClass = '', s
 const faq = (question, answer) => `<details><summary>${question}<span aria-hidden="true">+</span></summary><div class="faq-answer">${answer}</div></details>`;
 
 function filmPlayer({ id, title, duration, file, poster, autoplay = false, caption }) {
+  const film = films.find(item => item.id === id);
+  if (!film) throw new Error(`Missing film text for ${id}`);
   return `<figure class="film-player${autoplay ? ' hero-film' : ''}" id="${id}" data-video-player${autoplay ? ' data-autoplay="visible"' : ''}>
     <div class="film-topline"><span>${title}</span><span class="film-duration">${duration}</span></div>
     <div class="film-frame">
       <video id="${id}-video" width="1920" height="1080" controls playsinline preload="none"${autoplay ? ' muted' : ''} poster="${poster}" aria-label="${title}" aria-describedby="${id}-caption">
         <source src="${file}" type="video/mp4">
+        <track kind="captions" srclang="en" label="English" src="${film.captionPath}">
         Your browser does not support this video. <a href="${file}">Open the film.</a>
       </video>
       <button class="film-play" type="button" aria-label="Watch ${title.toLowerCase()} with sound" hidden><span class="play-symbol" aria-hidden="true"></span><span>Watch ${autoplay ? 'the film' : 'the walkthrough'}<small>${duration} · Sound on</small></span></button>
       ${autoplay ? '<button class="film-sound" type="button" hidden><span class="play-symbol" aria-hidden="true"></span>Watch from the start with sound</button>' : ''}
     </div>
-    <figcaption id="${id}-caption"><span>${caption}</span><a href="${file}">Open video <span aria-hidden="true">↗</span></a></figcaption>
+    <figcaption id="${id}-caption"><span>${caption}</span><span class="film-links"><a href="/films/#${film.transcriptAnchor}">Read transcript</a><a href="${file}">Open video <span aria-hidden="true">↗</span></a></span></figcaption>
     <p class="film-status" role="status" aria-live="polite"></p>
   </figure>`;
 }
@@ -146,6 +151,30 @@ export function privacyPage() {
 
 export function releasesPage() {
   return layout({ title: 'Reliox release notes — Mac early access version 0.10.0', path: '/releases/', description: 'Read what changed in Reliox 0.10.0, check Mac compatibility and verify the early-access download with its published SHA-256 checksum before installing.', body: `<article class="prose-page wrap"><a href="/download/" class="back-link">← Download Reliox</a><p class="eyebrow">A LITTLE BETTER, RELEASE BY RELEASE</p><h1>What’s new<br><span>in your space.</span></h1><div class="release-title"><h2>Reliox ${site.version}</h2><span>${site.date} · Early access</span></div><p class="prose-lead">A smaller start. One person, one next step, and the context you want to keep.</p><ul><li>A short, optional guided example shows how a message, a person and a next step fit together.</li><li>Save your own next step with just two required fields. Selected context and a due date are optional.</li><li>Find the saved source with a word, then open the actual task in your workspace.</li><li>Unfinished onboarding text uses the existing encrypted recovery system. A later visit can bring your unfinished first step back into view.</li><li>Replay through Settings → Quick start. Existing vaults, encryption and preferences are retained; account connections, AI and recording setup stay separate.</li></ul><p>The 1-, 3- and 10-minute milestones are design targets. Completion times and the experience with new users still need validation.</p><h2>Compatibility</h2><p>Apple Silicon Mac (M-series) · ${site.minOS}. This release does not include Intel, Windows, iPhone, Android or browser app builds.</p><h2>Early-access status</h2><p>Ad-hoc signed; not Apple notarized. Live account connections, attended desktop messaging and microphone/system-audio capture still have validation limits. Local drafts and optional cloud providers can require additional setup. The demo needs no account and uses sample data.</p><h2>Verify your download</h2><p>The exact file size and SHA-256 checksum are published with the release. Compare them if you want to verify that your file matches the published build.</p><div id="checksum-details" class="checksum-details"><p>View the checksum file on GitHub with the release.</p></div><p><a class="button button-secondary" href="${site.release}">Open release & checksums ${arrow}</a></p>${downloadButton()}</article>` });
+}
+
+const escapeText = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+const timestamp = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
+
+export function transcriptsPage() {
+  return layout({
+    title: 'Reliox film transcripts — launch film and product walkthrough',
+    path: '/films/',
+    description: 'Read the Reliox launch film and product walkthrough with English text, timestamps and descriptions of the example workspace shown in each film.',
+    body: `<article class="prose-page transcript-page wrap">
+      <a href="/" class="back-link">← Back to Reliox</a>
+      <h1>The films.<br><span>In words.</span></h1>
+      <p class="prose-lead">Read along with the launch film and product walkthrough, with timestamps and descriptions of key moments.</p>
+      <nav class="transcript-index" aria-label="Film transcripts">${films.map(film => `<a href="#${film.transcriptAnchor}">${escapeText(film.title)}<span>${timestamp(film.durationSeconds)}</span></a>`).join('')}</nav>
+      ${films.map(film => `<section class="transcript-section" id="${film.transcriptAnchor}" aria-labelledby="${film.id}-transcript-title">
+        <h2 id="${film.id}-transcript-title">${escapeText(film.title)}</h2>
+        <p>${escapeText(film.summary)}</p>
+        <p class="transcript-actions"><a href="/#${film.id}">Watch the film ${arrow}</a><a href="${film.captionPath}">English text track</a></p>
+        <ol class="transcript-list" aria-label="${escapeText(film.title)} transcript">${film.transcriptSegments.map(segment => `<li><time datetime="PT${segment.start}S">${timestamp(segment.start)}</time><div>${segment.text ? `<p class="transcript-text">${escapeText(segment.text)}</p>` : ''}${segment.description ? `<p class="transcript-description"><span>On screen</span> ${escapeText(segment.description)}</p>` : ''}</div></li>`).join('')}</ol>
+      </section>`).join('')}
+      <p class="transcript-end">The walkthrough uses example conversations. Read the <a href="/download/">current download notes</a> for compatibility and early-access details.</p>
+    </article>`,
+  });
 }
 
 export function notFoundPage() {
