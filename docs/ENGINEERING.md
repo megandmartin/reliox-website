@@ -70,7 +70,7 @@ That command streams the published ZIP, checks byte length and SHA-256 against t
 | --- | --- |
 | [Automated checks](https://github.com/megandmartin/reliox-website/actions/workflows/checks.yml) | The checked commit meets the assertions in the source and browser suites. |
 | [Recorded walkthrough](https://www.relioxos.com/#watch-demo) | A recorded view of the app using example conversations. |
-| [Versioned release](https://github.com/megandmartin/reliox-website/releases/tag/v0.9.0) | A downloadable early-access Mac build, with published compatibility and signing limits. |
+| [Versioned release](https://github.com/megandmartin/reliox-website/releases/tag/v0.10.0) | A downloadable early-access Mac build, with published compatibility and signing limits. |
 | A successful release-integrity check | The downloaded bytes match the published size and hashes at the time of the check. |
 
 Website checks cover the contracts described above. Mac installation, account compatibility, recording permissions, and longer-term use need their own product acceptance checks. See the [website roadmap](ROADMAP.md) for the remaining public-site work.

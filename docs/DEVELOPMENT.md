@@ -38,7 +38,7 @@ GitHub's repository link card is configured separately: open **Settings → Gene
 
 The ZIP and `SHA256SUMS` are GitHub Release assets, separate from the website deployment. `/download/mac/` redirects to the versioned ZIP. The website build consumes a prebuilt Mac release; it does not produce the app binary.
 
-Reliox 0.9.0 is an early-access development build for Apple Silicon Macs running macOS 14 or later. It is ad-hoc signed and has not been notarized by Apple. Keep those facts visible in download and release guidance. Installation, account connections, and recording permissions need their own acceptance checks.
+Reliox 0.10.0 is an early-access development build for Apple Silicon Macs running macOS 14 or later. It is ad-hoc signed and has not been notarized by Apple. Keep those facts visible in download and release guidance. Installation, account connections, and recording permissions need their own acceptance checks.
 
 For a maintainer preparing a release:
 

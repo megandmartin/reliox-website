@@ -18,7 +18,7 @@
     },
     {
       "source": "/download/mac/",
-      "destination": "https://github.com/megandmartin/reliox-website/releases/download/v0.9.0/Reliox-0.9.0-macOS-Apple-Silicon.zip",
+      "destination": "https://github.com/megandmartin/reliox-website/releases/download/v0.10.0/Reliox-0.10.0-macOS-Apple-Silicon.zip",
       "permanent": false
     }
   ],

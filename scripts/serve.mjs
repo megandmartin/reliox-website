@@ -8,7 +8,7 @@ const server = createServer(async (req, res) => {
   try {
     if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405, { Allow: 'GET, HEAD' }).end(); return; }
     const url = new URL(req.url, 'http://localhost');
-    if (url.pathname === '/download/mac/') { res.writeHead(307, { Location: 'https://github.com/megandmartin/reliox-website/releases/download/v0.9.0/Reliox-0.9.0-macOS-Apple-Silicon.zip' }).end(); return; }
+    if (url.pathname === '/download/mac/') { res.writeHead(307, { Location: 'https://github.com/megandmartin/reliox-website/releases/download/v0.10.0/Reliox-0.10.0-macOS-Apple-Silicon.zip' }).end(); return; }
     let path = resolve(root, `.${decodeURIComponent(url.pathname)}`);
     if (path !== root && !path.startsWith(root + sep)) { res.writeHead(403).end(); return; }
     if ((await stat(path)).isDirectory()) path = resolve(path, 'index.html');

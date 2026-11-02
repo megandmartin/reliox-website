@@ -12,7 +12,7 @@ Created by [Megan Martinsone](https://github.com/megandmartin).
 
 [Visit the website](https://www.relioxos.com/) · [Download for Mac](https://www.relioxos.com/download/) · [Watch the walkthrough](https://www.relioxos.com/#watch-demo) · [Release notes](https://www.relioxos.com/releases/) · [Engineering notes](docs/ENGINEERING.md)
 
-[![Website checks](https://github.com/megandmartin/reliox-website/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/megandmartin/reliox-website/actions/workflows/checks.yml) [![Early access 0.9.0](https://img.shields.io/badge/early_access-0.9.0-7056ad)](https://github.com/megandmartin/reliox-website/releases/tag/v0.9.0) [![macOS 14+ · Apple Silicon](https://img.shields.io/badge/macOS_14%2B-Apple_Silicon-34313e)](https://www.relioxos.com/download/)
+[![Website checks](https://github.com/megandmartin/reliox-website/actions/workflows/checks.yml/badge.svg?branch=main)](https://github.com/megandmartin/reliox-website/actions/workflows/checks.yml) [![Early access 0.10.0](https://img.shields.io/badge/early_access-0.10.0-7056ad)](https://github.com/megandmartin/reliox-website/releases/tag/v0.10.0) [![macOS 14+ · Apple Silicon](https://img.shields.io/badge/macOS_14%2B-Apple_Silicon-34313e)](https://www.relioxos.com/download/)
 
 ## A person. The whole thread.
 
@@ -26,7 +26,7 @@ Created by [Megan Martinsone](https://github.com/megandmartin).
 The [recorded walkthrough](https://www.relioxos.com/#watch-demo) uses example conversations. You can also [read the films in text](https://www.relioxos.com/films/). Read [how Reliox handles data](https://www.relioxos.com/privacy/) before bringing in your own context.
 
 > [!IMPORTANT]
-> **Mac early access:** Reliox 0.9.0 requires Apple Silicon and macOS 14 or later. The app is ad-hoc signed and **not Apple notarized**. Read the [installation guidance](https://www.relioxos.com/download/#install) and [release checksums](https://github.com/megandmartin/reliox-website/releases/tag/v0.9.0) before opening it. Optional connections and AI features need separate setup; live account compatibility is still being tested.
+> **Mac early access:** Reliox 0.10.0 requires Apple Silicon and macOS 14 or later. The app is ad-hoc signed and **not Apple notarized**. Read the [installation guidance](https://www.relioxos.com/download/#install) and [release checksums](https://github.com/megandmartin/reliox-website/releases/tag/v0.10.0) before opening it. Optional connections and AI features need separate setup; live account compatibility is still being tested.
 
 ## Inside this repository
 
