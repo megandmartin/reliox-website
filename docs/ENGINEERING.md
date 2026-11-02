@@ -6,16 +6,15 @@ Reliox's public website introduces the native Mac app, explains its early-access
 
 ```mermaid
 flowchart LR
-  Templates["src/site.mjs"] --> Build["scripts/build.mjs"]
-  Assets["public: CSS, JavaScript, screenshots, films"] --> Build
-  Build --> Output["dist: static pages and assets"]
+  Templates["src/site.mjs"] --> Build["Build with Node.js"]
+  Assets["public/ assets"] --> Build
+  Build --> Output["dist/"]
   Output --> Hosting["Vercel"]
-  Hosting --> Browser["Visitor's browser"]
-  Browser --> Redirect["/download/mac/"]
-  Redirect --> Release["Versioned ZIP on GitHub Releases"]
 ```
 
 [`scripts/build.mjs`](../scripts/build.mjs) renders the home, download, privacy, and release pages, then copies public assets and generates crawler files. [`src/site.mjs`](../src/site.mjs) contains the templates and shared layout. [`vercel.json`](../vercel.json) defines production redirects, response headers, and cache rules.
+
+Visitors receive the static files from Vercel. The `/download/mac/` route redirects to the versioned ZIP on GitHub Releases, keeping the app download separate from the website deployment.
 
 The local preview uses [`scripts/serve.mjs`](../scripts/serve.mjs); production serves the exported files through Vercel. Preview-server tests establish local HTTP behavior. Production configuration and live hosting need their own checks.
 
