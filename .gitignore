@@ -5,3 +5,6 @@ dist/
 .DS_Store
 qa/
 .vercel
+
+playwright-report/
+test-results/

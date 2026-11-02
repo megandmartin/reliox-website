@@ -1,10 +1,15 @@
 (() => {
   const toggle = document.querySelector('.menu-toggle');
   const nav = document.getElementById('main-nav');
-  function closeMenu() { toggle?.setAttribute('aria-expanded', 'false'); nav?.classList.remove('is-open'); }
+  function closeMenu() {
+    toggle?.setAttribute('aria-expanded', 'false');
+    toggle?.setAttribute('aria-label', 'Open navigation');
+    nav?.classList.remove('is-open');
+  }
   toggle?.addEventListener('click', () => {
     const open = toggle.getAttribute('aria-expanded') !== 'true';
     toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
     nav.classList.toggle('is-open', open);
   });
   nav?.addEventListener('click', (event) => { if (event.target.closest('a')) closeMenu(); });

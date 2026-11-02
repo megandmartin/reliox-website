@@ -29,7 +29,7 @@ Before submitting:
 npm test
 ```
 
-This builds the site and checks the generated output and local preview server. For visual or interaction changes, also check the rendered page at desktop and phone widths. Test keyboard navigation, visible focus and reduced motion. Include a screenshot or short recording when it helps a reviewer understand the change.
+This builds the site and checks the generated output, local preview server, and release-verifier failure cases. For interaction changes, also run `npm run test:browser` after the [browser-test setup](docs/ENGINEERING.md). For visual or interaction changes, check the rendered page at desktop and phone widths. Test keyboard navigation, visible focus and reduced motion. Include a screenshot or short recording when it helps a reviewer understand the change.
 
 ## Keep changes focused
 
