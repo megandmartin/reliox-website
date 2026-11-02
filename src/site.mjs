@@ -31,7 +31,7 @@ function footer() {
   <div class="footer-bottom"><span>© 2026 Reliox</span><nav aria-label="Footer navigation"><a href="/download/">Download</a><a href="/privacy/">Privacy</a><a href="/releases/">Release notes</a><a href="${site.repo}/issues">Feedback ${arrow}</a></nav><span class="footer-note">Made for the Mac. Built around people.</span></div></footer>`;
 }
 
-export function layout({ title, description, path = '/', body, pageClass = '' }) {
+export function layout({ title, description, path = '/', body, pageClass = '', scripts = [], preloadImages = [] }) {
   return `<!doctype html><html lang="en"><head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>${title}</title><meta name="description" content="${description}">
@@ -39,28 +39,43 @@ export function layout({ title, description, path = '/', body, pageClass = '' })
   <link rel="canonical" href="${site.origin}${path}"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <meta property="og:type" content="website"><meta property="og:site_name" content="Reliox"><meta property="og:title" content="${title}"><meta property="og:description" content="${description}"><meta property="og:url" content="${site.origin}${path}"><meta property="og:image" content="${site.origin}/assets/social-preview.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Reliox — A little space. For your people. A native Mac workspace for conversations, relationships and next steps.">
   <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${title}"><meta name="twitter:description" content="${description}"><meta name="twitter:image" content="${site.origin}/assets/social-preview.png">
-  <link rel="stylesheet" href="/styles.css"><script src="/main.js" defer></script>
+  ${preloadImages.map(src => `<link rel="preload" as="image" href="${src}" fetchpriority="high">`).join('')}<link rel="stylesheet" href="/styles.css"><script src="/main.js" defer></script>${scripts.map(src => `<script src="${src}" defer></script>`).join('')}
   </head><body class="${pageClass}">${header(path)}<main id="main">${body}</main>${footer()}</body></html>`;
 }
 
 const faq = (question, answer) => `<details><summary>${question}<span aria-hidden="true">+</span></summary><div class="faq-answer">${answer}</div></details>`;
 
+function filmPlayer({ id, title, duration, file, poster, autoplay = false, caption }) {
+  return `<figure class="film-player${autoplay ? ' hero-film' : ''}" id="${id}" data-video-player${autoplay ? ' data-autoplay="visible"' : ''}>
+    <div class="film-topline"><span>${title}</span><span class="film-duration">${duration}</span></div>
+    <div class="film-frame">
+      <video id="${id}-video" width="1920" height="1080" controls playsinline preload="none"${autoplay ? ' muted' : ''} poster="${poster}" aria-label="${title}" aria-describedby="${id}-caption">
+        <source src="${file}" type="video/mp4">
+        Your browser does not support this video. <a href="${file}">Open the film.</a>
+      </video>
+      <button class="film-play" type="button" aria-label="Watch ${title.toLowerCase()} with sound" hidden><span class="play-symbol" aria-hidden="true"></span><span>Watch ${autoplay ? 'the film' : 'the walkthrough'}<small>${duration} · Sound on</small></span></button>
+      ${autoplay ? '<button class="film-sound" type="button" hidden><span class="play-symbol" aria-hidden="true"></span>Watch from the start with sound</button>' : ''}
+    </div>
+    <figcaption id="${id}-caption"><span>${caption}</span><a href="${file}">Open video <span aria-hidden="true">↗</span></a></figcaption>
+    <p class="film-status" role="status" aria-live="polite"></p>
+  </figure>`;
+}
+
 export function home() {
   return layout({
     title: 'Reliox — A little space for your people, on your Mac',
     description: 'Keep conversations, relationships and follow-ups close in one calm Mac workspace. Explore Reliox and download the early-access app for Apple Silicon Macs.',
+    scripts: ['/video.js'],
+    preloadImages: ['/media/reliox-launch-poster.webp'],
     body: `
     <section class="hero wrap">
       <div class="eyebrow"><span class="mini-star" aria-hidden="true">✦</span> A LITTLE SPACE. FOR YOUR PEOPLE.</div>
       <h1>Your people.<br><span>All the context.</span></h1>
       <p class="hero-copy">The conversation. The little details. The thing you promised.<br class="desktop-break"> Bring them together in a calm space on your Mac.</p>
-      <div class="hero-actions">${downloadButton()}<a class="text-link" href="#experience">Take a closer look <span aria-hidden="true">↓</span></a></div>
+      <div class="hero-actions">${downloadButton()}<a class="text-link watch-film-link" href="#launch-film"><span class="play-symbol" aria-hidden="true"></span>Watch the film <span class="watch-link-duration">0:38</span></a></div>
       <p class="compatibility">Apple Silicon · macOS 14+ <span aria-hidden="true">/</span> Early access</p>
       <div class="hero-stage">
-        <div class="stage-note note-left"><span class="note-mark" aria-hidden="true">↳</span>Less switching.<br>More remembering.</div>
-        <div class="app-showcase"><img src="/assets/inbox.webp" alt="Reliox inbox showing an example conversation, a reply draft and the person's relationship context side by side" width="1600" height="1024" fetchpriority="high"></div>
-        <div class="stage-note note-right">A place for the<br>person behind the chat.<span class="note-mark" aria-hidden="true">↙</span></div>
-        <p class="image-caption">The real Mac app, with example conversations. Your own space starts empty.</p>
+        ${filmPlayer({ id: 'launch-film', title: 'The Reliox launch film', duration: '0:38', file: '/media/reliox-launch-v1.mp4', poster: '/media/reliox-launch-poster.webp', autoplay: true, caption: 'One message. A little more context. Scroll to preview; press play for the full film.' })}
       </div>
     </section>
 
@@ -82,6 +97,11 @@ export function home() {
     <section class="small-space wrap reveal"><div class="small-space-copy"><p class="eyebrow">PRESENT WHEN YOU NEED IT</p><h2>A small presence.<br>A bigger picture.</h2><p>A star on your desktop. A quick inbox. A full workspace when it’s time to focus. Reliox opens up with the task, then gets out of your way.</p><div class="keyboard-line"><kbd>esc</kbd><span>Back to a little space.</span></div></div><div class="scale-scene" aria-label="Reliox expands from a small desktop rail into a conversation view"><div class="scene-orbit"></div><img class="rail-preview" src="/assets/rail.webp" alt="The narrow Reliox navigation rail" width="132" height="1080" loading="lazy"><div class="compact-preview"><img src="/assets/compact.webp" alt="The compact Reliox inbox" width="956" height="1360" loading="lazy"></div><span class="scene-label">YOUR DESKTOP. A LITTLE LIGHTER.</span></div></section>
 
     <section class="voice-section wrap reveal"><div class="voice-visual"><div class="audio-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="transcript-sample"><span class="small-label">A LITTLE LESS NOTE-TAKING</span><p>“Let’s catch up next week.<br>I’ll bring the first draft.”</p><span class="transcript-caption">Illustrative transcript</span></div><div class="task-chip"><span aria-hidden="true">✓</span> Bring the first draft <span class="chip-label">Your next step</span></div></div><div class="voice-copy"><p class="eyebrow">STAY IN THE CONVERSATION</p><h2>Be there.<br>Bring the words along.</h2><p>Capture a thought or a meeting with local English transcription. Review the words, correct speaker labels and save the next step.</p><p class="feature-detail">Recording starts with your click and a visible indicator. Microphone and system audio need macOS permission.</p></div></section>
+
+    <section id="watch-demo" class="demo-section wrap reveal" aria-labelledby="demo-title">
+      <div class="section-heading"><div><p class="eyebrow">A CLOSER LOOK</p><h2 id="demo-title">One person.<br>The whole thread.</h2></div><div class="demo-intro"><p>Follow a conversation from scattered messages to a clear next step. A two-minute look inside the Mac app.</p><span class="demo-note">Recorded walkthrough · Example conversations</span></div></div>
+      ${filmPlayer({ id: 'product-demo', title: 'The Reliox product walkthrough', duration: '2:02', file: '/media/reliox-walkthrough-v1.mp4', poster: '/media/reliox-demo-poster.webp', caption: 'See conversations, meeting notes and reviewed next steps in one recorded demo.' })}
+    </section>
 
     <section class="privacy-section wrap reveal"><div class="privacy-mark" aria-hidden="true">✦</div><p class="eyebrow">YOUR CONTEXT IS PERSONAL</p><h2>Keep it close.<br><span>Keep the choice.</span></h2><p>Your saved workspace is encrypted on your Mac. Start without connecting accounts. Optional cloud drafts show the exact context before you choose to share it.</p><a href="/privacy/" class="text-link">How Reliox handles your data ${arrow}</a><div class="privacy-principles"><span>Encrypted local workspace</span><span>Cloud only by choice</span><span>Replies you review</span></div></section>
 

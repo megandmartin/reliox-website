@@ -38,3 +38,11 @@ The native application source stays in its original local handoff directory. Onl
 ## Scope
 
 No database, account system, data capture form or analytics scripts. Account authorization, microphone/system capture, native-device acceptance and Apple notarization are separate from website verification. The app supports Apple Silicon and macOS 14+; other operating systems and a browser app are not offered.
+
+## Homepage films
+
+The hero contains the supplied 38-second launch film; a two-minute product walkthrough appears below the feature sections. Both are self-hosted under `public/media/` as 1080p H.264/AAC MP4 with front-loaded metadata for progressive playback. The launch film is approximately 4.5 MB; the walkthrough is approximately 22.7 MB. Source edits, timing and sound are preserved.
+
+The hero starts muted when at least 45% of its player enters the viewport, pauses when it leaves, and honors manual pauses, reduced-motion and data-saving preferences. “Watch from the start with sound” restarts and unmutes through a user gesture. The walkthrough only loads on explicit play. Native playback, seeking, audio and fullscreen controls remain available, as do posters and direct-file links. Videos pause when the page is hidden; starting one pauses the other.
+
+`preload="none"` prevents the full videos from transferring on arrival. Vercel serves media byte ranges for seeking. These media URLs have a one-year immutable cache: use a new filename when replacing a film or poster. No new video service, cookie or third-party player is used.
